@@ -16,19 +16,28 @@ module Magentwo
       end
     end
 
+    # partial update
+    def update(attributes)
+      self.check_presence self.class.unique_identifier
+
+      # build sliced hash
+      mdl_attrs = self.to_h.slice(*attributes.map {|x| x.to_s})
+
+      # self.class.lower_case_name, self.to_h].to_json 
+      params = Hash[self.class.lower_case_name, mdl_attrs]
+
+      response = Magentwo::Base.call :put, "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}", params
+    end
+
     def save
       self.validate
       self.check_presence self.class.unique_identifier
-      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}" rescue nil
-      puts "escape send: " + "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}"
       response = Magentwo::Base.call :put, "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}", self
       self.class.new response
     end
 
     def delete
       self.check_presence self.class.unique_identifier
-      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}" rescue nil
-      puts "escape send: " + "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}"
       Magentwo::Base.call :delete, "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}", nil
     end
 
@@ -69,7 +78,6 @@ module Magentwo
       attr_accessor :adapter
 
       def [] unique_identifier_value
-        puts "#{base_path}/#{CGI.escape(unique_identifier_value)}"
         result = Magentwo::Base.get nil, path:"#{base_path}/#{CGI.escape(unique_identifier_value)}"
         self.new result if result
       end
