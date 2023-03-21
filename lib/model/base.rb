@@ -19,7 +19,7 @@ module Magentwo
     def save
       self.validate
       self.check_presence self.class.unique_identifier
-      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}"
+      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}" rescue nil
       puts "escape send: " + "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}"
       response = Magentwo::Base.call :put, "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}", self
       self.class.new response
@@ -27,7 +27,7 @@ module Magentwo
 
     def delete
       self.check_presence self.class.unique_identifier
-      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}"
+      puts "send escape: " + "#{self.class.base_path}/#{self.send(CGI.escape(self.class.unique_identifier))}" rescue nil
       puts "escape send: " + "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}"
       Magentwo::Base.call :delete, "#{self.class.base_path}/#{CGI.escape(self.send(self.class.unique_identifier))}", nil
     end
